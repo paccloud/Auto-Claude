@@ -8,10 +8,32 @@ Auto Claude is a multi-agent autonomous coding framework that builds software th
 
 **CRITICAL: All AI interactions use the Claude Agent SDK (`claude-agent-sdk` package), NOT the Anthropic API directly.**
 
+## Quick Reference
+
+```bash
+# Development
+npm run install:all          # Install all dependencies
+npm run dev                  # Run Electron app in dev mode
+npm start                    # Build and run production
+
+# Testing
+npm run test:backend         # Run Python tests
+cd apps/frontend && npm test # Run frontend tests
+
+# Linting
+cd apps/frontend && npm run lint && npm run typecheck
+pre-commit run --all-files   # Python linting
+
+# Backend CLI (from apps/backend/)
+python spec_runner.py --interactive  # Create spec
+python run.py --spec 001             # Run build
+python run.py --spec 001 --qa        # Run QA validation
+```
+
 ## Project Structure
 
 ```
-autonomous-coding/
+Auto-Claude/
 ├── apps/
 │   ├── backend/           # Python backend/CLI - ALL agent logic lives here
 │   │   ├── core/          # Client, auth, security
@@ -125,6 +147,24 @@ apps/backend/.venv/bin/pytest tests/ -m "not slow"
 
 # Or from root
 npm run test:backend
+
+# Frontend tests
+cd apps/frontend && npm test           # Run once
+cd apps/frontend && npm run test:watch # Watch mode
+cd apps/frontend && npm run test:e2e   # E2E tests (requires built app)
+```
+
+### Linting & Type Checking
+```bash
+# Frontend
+cd apps/frontend
+npm run lint          # ESLint
+npm run lint:fix      # ESLint with auto-fix
+npm run typecheck     # TypeScript type checking
+
+# Python (via pre-commit)
+pre-commit run ruff --all-files        # Linting
+pre-commit run ruff-format --all-files # Formatting
 ```
 
 ### Spec Validation
@@ -248,6 +288,21 @@ main (user's branch)
 4. User runs `--merge` to add to their project
 5. User pushes to remote when ready
 
+### Pre-commit Hooks
+
+The project uses pre-commit hooks for automated checks before each commit:
+
+```bash
+# Install pre-commit (one-time setup)
+pip install pre-commit
+pre-commit install
+
+# Run all checks manually
+pre-commit run --all-files
+```
+
+**Hooks include:** ruff (Python linting/formatting), ESLint, TypeScript type checking, trailing whitespace removal.
+
 ### Contributing to Upstream
 
 **CRITICAL: When submitting PRs to AndyMik90/Auto-Claude, always target the `develop` branch, NOT `main`.**
@@ -264,6 +319,8 @@ main (user's branch)
 # Ensure only your commits are included
 git log --oneline upstream/develop..HEAD
 ```
+
+**Branch naming:** `feature/`, `fix/`, `hotfix/`, `docs/`, `refactor/`, `test/`, `chore/`
 
 ### Security Model
 

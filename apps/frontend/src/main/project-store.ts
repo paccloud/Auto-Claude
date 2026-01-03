@@ -173,6 +173,7 @@ export class ProjectStore {
    * Validate all projects to ensure their .auto-claude folders still exist.
    * If a project has autoBuildPath set but the folder was deleted,
    * reset autoBuildPath to empty string so the UI prompts for reinitialization.
+   * If a project is missing autoBuildPath but .auto-claude exists, restore it.
    *
    * @returns Array of project IDs that were reset due to missing .auto-claude folder
    */
@@ -181,8 +182,14 @@ export class ProjectStore {
     let hasChanges = false;
 
     for (const project of this.data.projects) {
-      // Skip projects that aren't initialized (autoBuildPath is empty)
+      // If autoBuildPath is missing but .auto-claude exists, restore it.
       if (!project.autoBuildPath) {
+        if (existsSync(project.path) && isInitialized(project.path)) {
+          console.warn(`[ProjectStore] .auto-claude folder detected for project "${project.name}" - restoring autoBuildPath`);
+          project.autoBuildPath = '.auto-claude';
+          project.updatedAt = new Date();
+          hasChanges = true;
+        }
         continue;
       }
 
